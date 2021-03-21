@@ -6,7 +6,6 @@ export interface PlayEvent {
     user: string
 }
 
-
 export interface PauseEvent {
     type: "pause"
     room: string
@@ -29,10 +28,16 @@ export interface RoomStateEvent {
     type: "stats"
     user: undefined
     room: string
-    users: number
+    users: string[]
     playing: boolean
     seconds: number
     timestamp: number
 }
 
-export type SyncEvent = PlayEvent | PauseEvent | JoinEvent | LeaveEvent | RoomStateEvent
+export interface UpdateNameEvent {
+    type: "update_name"
+    user: string
+    name: string
+}
+
+export type SyncEvent = PlayEvent | PauseEvent | JoinEvent | LeaveEvent | RoomStateEvent | UpdateNameEvent

@@ -2,12 +2,13 @@ import { Alert, AlertIcon } from '@chakra-ui/alert'
 import { Avatar, AvatarGroup } from '@chakra-ui/avatar'
 import { Button } from '@chakra-ui/button'
 import { useClipboard } from '@chakra-ui/hooks'
-import { Box, Container, Divider, Heading, VStack } from '@chakra-ui/layout'
+import { Input } from '@chakra-ui/input'
+import { Box, Container, Divider, Flex, Heading, HStack, Spacer, VStack } from '@chakra-ui/layout'
 import React, { createRef, useEffect, useState } from 'react'
 import ReactPlayer from 'react-player'
 import { v4 as uuid } from 'uuid'
 
-import { JoinEvent, LeaveEvent, PauseEvent, PlayEvent, RoomStateEvent, SyncEvent } from './types'
+import { JoinEvent, LeaveEvent, PauseEvent, PlayEvent, RoomStateEvent, SyncEvent, UpdateNameEvent } from './types'
 
 // Load user id and room id
 const userId: string = uuid()
@@ -41,12 +42,13 @@ const leave = () => {
 function App() {
   const [file, setFile] = useState<string | null>(null)
   const [progress, setProgress] = useState(0)
-  const [users, setUsers] = useState(0)
+  const [users, setUsers] = useState<string[]>([])
   const [error, setError] = useState("")
   const [playing, setPlaying] = useState(false)
   const [player, setPlayer] = useState<ReactPlayer | null>(null)
   const [state, setState] = useState<RoomStateEvent | null>(null)
   const [readyCount, setReadyCount] = useState(0)
+  const [name, setName] = useState("")
   const { hasCopied, onCopy } = useClipboard(window.location.href)
 
   const pauseHandler = () => {
@@ -137,6 +139,11 @@ function App() {
     }
   }
 
+  const nameHandler = () => {
+    const ev: UpdateNameEvent = { type: 'update_name', name: name, user: userId }
+    socket.send(JSON.stringify(ev))
+  }
+
   return (<>
     <Container >
       <Box mt="20">
@@ -166,8 +173,16 @@ function App() {
             {hasCopied ? "Copied" : "Copy URL"}
           </Button></Heading>
           <AvatarGroup size="sm" max={3}>
-            {[...Array(users)].map(() => <Avatar />)}
+            {users.map(it => <Avatar name={it} />)}
           </AvatarGroup>
+
+          <Divider />
+
+          <Heading size="sm">Name</Heading>
+          <HStack spacing={3}>
+            <Input placeholder="Name" value={name} onChange={e => setName(e.target.value)} />
+            <Button onClick={nameHandler}>OK</Button>
+          </HStack>
         </VStack>
       </Box>
     </Container>
@@ -178,7 +193,6 @@ function App() {
 export default App
 
 window.onbeforeunload = leave
-
 
 function adjustedSeconds(msg: RoomStateEvent | PlayEvent): number {
   const delay = msg.timestamp ? (new Date().getTime() - msg.timestamp) / 1000 : 0
