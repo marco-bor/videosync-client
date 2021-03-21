@@ -166,7 +166,7 @@ function App() {
             {hasCopied ? "Copied" : "Copy URL"}
           </Button></Heading>
           <AvatarGroup size="sm" max={3}>
-            {[...Array(users)].map(() => <Avatar src="https://bit.ly/broken-link" />)}
+            {[...Array(users)].map(() => <Avatar />)}
           </AvatarGroup>
         </VStack>
       </Box>
