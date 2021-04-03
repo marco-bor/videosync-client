@@ -68,7 +68,6 @@ function App() {
     // prevent emitting same event multiple times
     if (!playing) {
       setPlaying(true)
-      console.log("seconds", player!.getCurrentTime())
       const ev: PlayEvent = {
         type: "play",
         timestamp: new Date().getTime(),
@@ -103,8 +102,11 @@ function App() {
         case 'play':
           setPlaying(true)
           const seconds = adjustedSeconds(msg)
+          console.log("player time", player!.getCurrentTime())
+          console.log("seconds", seconds)
           if (Math.abs(seconds - (player?.getCurrentTime() || 0)) > 1) {
             player?.seekTo(seconds, "seconds")
+            console.log("-> seek", seconds)
           }
           break
 
@@ -127,11 +129,12 @@ function App() {
     }
 
     return () => {
-      leave()
-      setError("You left the room. Refresh to join again.")
+      if (socket.readyState === socket.OPEN) {
+        leave()
+        setError("You left the room. Refresh to join again.")
+      }
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [player])
 
   const readyHandler = () => {
     if (readyCount === 0 && state) {
