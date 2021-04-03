@@ -130,6 +130,7 @@ function App() {
       leave()
       setError("You left the room. Refresh to join again.")
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const readyHandler = () => {
