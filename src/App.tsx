@@ -117,7 +117,9 @@ function App() {
           break
       }
     }
+  }, [player])
 
+  useEffect(() => {
     socket.onclose = (ev) => {
       console.log("socket closed", ev)
       setError("Invalid socket. Please refresh page.")
@@ -134,7 +136,7 @@ function App() {
         setError("You left the room. Refresh to join again.")
       }
     }
-  }, [player])
+  }, [])
 
   const readyHandler = () => {
     if (readyCount === 0 && state) {
